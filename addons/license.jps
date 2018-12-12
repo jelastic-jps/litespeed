@@ -1,0 +1,42 @@
+version: 1.1
+type: update
+targetNodes:
+  nodeGroup: '*' 
+id: litespeed
+name: LiteSpeed License
+logo: https://www.litespeedtech.com/images/logos/litespeed/litespeed-logo-square.png
+homepage: https://www.litespeedtech.com/
+description:
+  short: LiteSpeed License 
+nodeGroupAlias:
+  ${targetNodes.nodeGroup}: cp
+    
+onInstall: updateLicenseAndRestart
+onAfterStart: updateLicenseAndRestart  
+onBeforeSetCloudletCount[cp]: 
+  updateLicense: ${event.params.flexibleCloudlets}
+onBeforeServiceScaleOut[cp]: updateLicense
+onAfterScaleIn[cp]: updateLicense      
+onBeforeDelete: deleteLicense
+onAfterStop: deleteLicense
+  
+actions:          
+  updateLicense:
+    script: |-
+        var cloudlets = getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets},
+            params = {envName:"${env.envName}", appId:"${env.appid}", nodeGroup:"${targetNodes.nodeGroup}", cloudlets:cloudlets},
+            appid = "9e6afcf310004ac84060f90ff41a5aba",
+            resp = jelastic.dev.scripting.Eval(appid, session, "ls.license", params);        
+        return resp.response ? resp.response:resp;
+    cloudlets: ${this:}
+            
+  updateLicenseAndRestart:
+    - updateLicense
+    - restart 
+    
+  deleteLicense:
+    updateLicense: delete
+
+  restart:
+    cmd[cp]: jem service restart
+    user: root
