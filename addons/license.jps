@@ -6,6 +6,7 @@ id: litespeed
 name: LiteSpeed License
 logo: https://www.litespeedtech.com/images/logos/litespeed/litespeed-logo-square.png
 homepage: https://www.litespeedtech.com/
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/litespeed/master
 description:
   short: LiteSpeed License 
 nodeGroupAlias:
@@ -19,6 +20,10 @@ onBeforeServiceScaleOut[cp]: updateLicense
 onAfterScaleIn[cp]: updateLicense      
 onBeforeDelete: deleteLicense
 onAfterStop: deleteLicense
+onAfterClone:
+  install: ${baseUrl}/addons/license.jps?_r=${fn.random}
+  envName: ${event.response.env.envName}
+  nodeGroup: ${targetNodes.nodeGroup}
   
 actions:          
   updateLicense:
