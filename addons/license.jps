@@ -42,5 +42,7 @@ actions:
     updateLicense: delete
 
   restart:
-    cmd[cp]: jem service restart
+    cmd[cp]: |-
+      sed -i "s/root@localhost/${user.email}/g" /var/www/conf/httpd_config.xml
+      jem service restart
     user: root
