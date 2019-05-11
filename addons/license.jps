@@ -1,4 +1,5 @@
 version: 1.1
+id: litespeed-webadc
 type: update
 targetNodes:
   nodeGroup: '*' 
@@ -11,8 +12,12 @@ description:
 nodeGroupAlias:
   ${targetNodes.nodeGroup}: cp
     
-onInstall: updateLicenseAndRestart
-onAfterStart: updateLicenseAndRestart  
+onInstall: 
+  - if ("${nodes.cp.master.nodeType}".indexOf("litespeedphp") > -1): 
+      cmd[cp]: sed -i "s/root@localhost/${user.email}/g" /var/www/conf/httpd_config.xml
+  - updateLicense
+
+onAfterStart: updateLicense  
 onBeforeSetCloudletCount[cp]: 
   updateLicense: ${event.params.flexibleCloudlets}
 onBeforeServiceScaleOut[cp]: updateLicense
@@ -33,16 +38,7 @@ actions:
             resp = jelastic.dev.scripting.Eval(appid, session, "ls.license", params);        
         return resp.response ? resp.response:resp;
     cloudlets: ${this:}
-            
-  updateLicenseAndRestart:
-    - updateLicense
-    - restart 
-    
+                
   deleteLicense:
     updateLicense: delete
 
-  restart:
-    cmd[cp]: |-
-      sed -i "s/root@localhost/${user.email}/g" /var/www/conf/httpd_config.xml
-      jem service restart
-    user: root
