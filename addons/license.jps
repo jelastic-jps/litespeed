@@ -22,7 +22,8 @@ onAfterStop: deleteLicense
 onAfterClone:
   install: ${baseUrl}/addons/license.jps?_r=${fn.random}
   envName: ${event.response.env.envName}
-  nodeGroup: ${settings.nodeGroup}
+  settings: 
+    nodeGroup: ${settings.nodeGroup}
 
 actions:
   updateLicense:
