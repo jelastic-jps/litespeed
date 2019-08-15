@@ -1,6 +1,6 @@
 type: update
 name: LiteSpeed License Add-on
-baseUrl: https://raw.githubusercontent.com/sych74/litespeed/master
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/litespeed/master
 description:
   short: LiteSpeed License
 targetNodes: none
