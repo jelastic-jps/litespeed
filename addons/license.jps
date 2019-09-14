@@ -16,7 +16,10 @@ onAfterStart: updateLicense
 onBeforeSetCloudletCount[cp]:
   updateLicense: ${event.params.flexibleCloudlets}
 onBeforeServiceScaleOut[cp]: updateLicense
-onAfterScaleIn[cp]: updateLicense
+onAfterScaleIn:
+  if ('${event.params.nodeGroup}' == '${settings.nodeGroup}'):
+    - if (${nodes.cp.length:0}): updateLicense
+    - if (!${nodes.cp.length:0}): deleteLicense  #delete last node in a layer
 onBeforeDelete: deleteLicense
 onAfterStop: deleteLicense
 onAfterClone:
@@ -28,7 +31,7 @@ onAfterClone:
 actions:
   updateLicense:
     script: |-
-      var cloudlets = getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets},
+      var cloudlets = getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets:0},
           params = {envName:"${env.envName}", appId:"${env.appid}", nodeGroup:"${settings.nodeGroup}", cloudlets:cloudlets},
           appid = "9e6afcf310004ac84060f90ff41a5aba",
           resp = jelastic.dev.scripting.Eval(appid, session, "ls.license", params);
