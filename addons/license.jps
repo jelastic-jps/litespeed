@@ -22,9 +22,9 @@ onAfterScaleIn:
     - if (!${nodes.cp.length:0}): deleteLicense  #delete last node in a layer
 onBeforeDelete: deleteLicense
 onAfterStop: 
-  - if (event.response.result != 0): deleteLicense
+  - if (event.response.result == 0): deleteLicense
   - else:
-    log: "ERROR -> result: ${event.response.result}, error: ${event.response.error}"    
+      log: "ERROR -> result: ${event.response.result}, error: ${event.response.error}"    
 onAfterClone:
   install: ${baseUrl}/addons/license.jps?_r=${fn.random}
   envName: ${event.response.env.envName}
