@@ -25,7 +25,7 @@ buttons:
     submitButtonText: Apply          
     loadingText: Updating...
     confirmText: Do you want to apply license updates?
-    successText: License has been successfully updated!
+    successText: LiteSpeed license has been successfully updated!
         
 nodeGroupAlias:
   ${targetNodes.nodeGroup}: cp
