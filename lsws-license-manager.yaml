@@ -2,9 +2,9 @@ type: update
 id: lsws-license-manager
 name: LiteSpeed Web Server Commercial License Manager
 logo: https://www.litespeedtech.com/images/logos/litespeed/litespeed-logo-square.svg
-description: |
+description:
   short: Please choose the most appropritae license option. 
-  text: /texts/description.md
+  text: Simply choose number of workers, numbers of domains and LiteMage addon for enabling one of the license options available at the [official website](https://www.litespeedtech.com/products/litespeed-web-server/lsws-pricing).  
 
 globals:
   appid: 9e6afcf310004ac84060f90ff41a5aba
