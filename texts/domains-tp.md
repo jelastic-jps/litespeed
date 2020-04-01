@@ -1,0 +1,1 @@
+The domain limit only refers to top-level domains. Subdomains are unlimited. Aliased/parked domains also do not count toward the limit. Any domains that exceed the specified limit will result in a 403 error.
