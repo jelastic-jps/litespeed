@@ -1,2 +1,0 @@
-Make your business flexible with license switching Add-On. License selection and, upgrade or downgrade process for LiteSpeed products described in [Official documentation](https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:licenses:choosing-a-license) is a laborious process. Simply change your hosting parameters: [reserved cloudlets](https://docs.jelastic.com/cloudlet), number of workers, numbers of domains and Add-On issues proper license and price. 
-In case of Magento, pick out the LiteMage Cache tariff plan. 
