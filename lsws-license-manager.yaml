@@ -3,10 +3,9 @@ id: lsws-license-manager
 name: LiteSpeed Web Server Commercial License Manager
 logo: https://www.litespeedtech.com/images/logos/litespeed/litespeed-logo-square.svg
 description: |
-  Please choose the most appropritae license option. 
-  Add more text here to make it more aligned and even more text, and ome more time. 
-  One more paragraph about this add-on and maybe some links to documentations. 
-  And little bit more text text text loong text here and so on and so far. 
+  short: Please choose the most appropritae license option. 
+  text: /texts/description.md
+
 globals:
   appid: 9e6afcf310004ac84060f90ff41a5aba
   
@@ -26,7 +25,7 @@ buttons:
     submitButtonText: Apply          
     loadingText: Updating...
     confirmText: Do you want to apply license updates?
-    successText: License has been successfully updated!
+    successText: LiteSpeed license has been successfully updated!
         
 nodeGroupAlias:
   ${targetNodes.nodeGroup}: cp
