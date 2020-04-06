@@ -1,7 +1,7 @@
 type: update
 id: lsws-license-manager
 name: LiteSpeed Web Server Commercial License Manager
-logo: https://www.litespeedtech.com/images/logos/litespeed/litespeed-logo-square.svg
+logo: https://raw.githubusercontent.com/sych74/litespeed/master/images/ls-ws-license.svg?sanitize=true
 description:
   short: Please choose the most appropritae license option. 
   text: Simply choose number of workers, numbers of domains and LiteMage addon for enabling one of the license options available at the [official website](https://www.litespeedtech.com/products/litespeed-web-server/lsws-pricing).  
@@ -47,6 +47,6 @@ actions:
             domains:domains,
             workers:workers
           },
-          resp = jelastic.dev.scripting.Eval(jps.globals.appid, session, "ls.license", params);
+          resp = jelastic.dev.scripting.Eval("${globals.appid}", session, "ls.license", params);
       return resp.response ? resp.response:resp;
   
