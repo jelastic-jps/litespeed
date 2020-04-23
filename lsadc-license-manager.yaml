@@ -33,7 +33,7 @@ onInstall: configure
 actions:
   configure: 
    script: |-
-      var modules = "${settings.modules}" ? "litemageunlimited":"",
+      var modules = ${settings.modules} ? "litemageunlimited":"cache",
           workers = ${settings.workers};
       var params = {
             envName:"${env.envName}", 
