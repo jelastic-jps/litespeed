@@ -34,10 +34,13 @@ onInstall: configure
 actions:
   configure: 
    script: |-
-      var modules = "${settings.modules}",
+      var modules = "${settings.modules:cache}",
           workers = ${settings.workers},
           domains = ${settings.domains},
           cloudlets = ${nodes.cp.master.flexibleCloudlets:0};
+      if ((cloudlets *  ${nodes.cp.length}) > 16 && workers == 1 && domains == 1 && modules == 'cache') {
+        return {result:'warning', message:'FREE Starter lisense is applicable only for nodes with scaling limit up to 16 cloudlets / 2 GiB RAM'}
+      }
       var params = {
             envName:"${env.envName}", 
             appId:"${env.appid}", 
