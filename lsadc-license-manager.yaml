@@ -15,10 +15,6 @@ nodeGroupAlias:
 targetNodes:
   nodeType:
     - litespeedadc
-                
-onBeforeInit: |
-  var resp = jelastic.dev.scripting.Eval(jps.globals.appid, session, "ls.wizard.ui", {stack:"adc"});            
-  return resp.response ? resp.response:resp;
 
 buttons:        
   - settings: main
@@ -28,7 +24,12 @@ buttons:
     loadingText: Updating...
     confirmText: Do you want to apply license updates?
     successText: LiteSpeed license has been successfully updated!
+
+onBeforeInit: |
+  var resp = jelastic.dev.scripting.Eval(jps.globals.appid, session, "ls.wizard.ui", {stack:"adc"});            
+  return resp.response ? resp.response:resp;
               
+onAfterStart: configure
 onInstall: configure
 
 onAfterClone:
@@ -55,4 +56,3 @@ actions:
           },
           resp = jelastic.dev.scripting.Eval("${globals.appid}", session, "ls.license", params);
       return resp.response ? resp.response:resp;
-  
