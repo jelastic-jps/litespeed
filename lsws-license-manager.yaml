@@ -9,6 +9,9 @@ description:
 globals:
   appid: 9e6afcf310004ac84060f90ff41a5aba
   
+nodeGroupAlias:
+  ${targetNodes.nodeGroup}: cp
+  
 targetNodes:
   nodeType:
     - litespeedphp
@@ -21,7 +24,8 @@ onBeforeInit: |
 onAfterClone:
   - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
   - install: ${response.jps}
-    envName: ${event.response.env.envName}    
+    envName: ${event.response.env.envName}
+    nodeGroup: cp
     settings: 
       modules: ${settings.modules}      
       workers: ${settings.workers}      
@@ -36,8 +40,6 @@ buttons:
     confirmText: Do you want to apply license updates?
     successText: LiteSpeed license has been successfully updated!
         
-nodeGroupAlias:
-  ${targetNodes.nodeGroup}: cp
 onInstall: configure
       
 actions:
