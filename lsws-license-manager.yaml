@@ -18,6 +18,15 @@ onBeforeInit: |
   var resp = jelastic.dev.scripting.Eval(jps.globals.appid, session, "ls.wizard.ui");            
   return resp.response ? resp.response:resp;
 
+onAfterClone:
+  - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
+  - install: ${response.jps}
+    envName: ${event.response.env.envName}    
+    settings: 
+      modules: ${settings.modules}      
+      workers: ${settings.workers}      
+      domains: ${settings.domains}      
+      
 buttons:        
   - settings: main
     action: configure
