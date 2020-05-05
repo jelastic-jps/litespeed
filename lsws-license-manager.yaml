@@ -16,7 +16,16 @@ targetNodes:
   nodeType:
     - litespeedphp
     - llsmp
-                
+
+buttons:        
+  - settings: main
+    action: configure
+    caption: Configure
+    submitButtonText: Apply          
+    loadingText: Updating...
+    confirmText: Do you want to apply license updates?
+    successText: LiteSpeed license has been successfully updated!
+
 onBeforeInit: |
   var resp = jelastic.dev.scripting.Eval(jps.globals.appid, session, "ls.wizard.ui");            
   return resp.response ? resp.response:resp;
@@ -30,16 +39,8 @@ onAfterClone:
       modules: ${settings.modules}      
       workers: ${settings.workers}      
       domains: ${settings.domains}      
-      
-buttons:        
-  - settings: main
-    action: configure
-    caption: Configure
-    submitButtonText: Apply          
-    loadingText: Updating...
-    confirmText: Do you want to apply license updates?
-    successText: LiteSpeed license has been successfully updated!
-        
+
+onAfterStart: configure
 onInstall: configure
       
 actions:
@@ -62,5 +63,4 @@ actions:
             workers:workers
           },
           resp = jelastic.dev.scripting.Eval("${globals.appid}", session, "ls.license", params);
-      return resp.response ? resp.response:resp;
-  
+      return resp.response ? resp.response:resp;  
