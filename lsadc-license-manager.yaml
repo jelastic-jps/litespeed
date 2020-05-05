@@ -8,7 +8,10 @@ description:
 
 globals:
   appid: 9e6afcf310004ac84060f90ff41a5aba
-  
+
+nodeGroupAlias:
+  ${targetNodes.nodeGroup}: bl
+ 
 targetNodes:
   nodeType:
     - litespeedadc
@@ -25,11 +28,18 @@ buttons:
     loadingText: Updating...
     confirmText: Do you want to apply license updates?
     successText: LiteSpeed license has been successfully updated!
-        
-nodeGroupAlias:
-  ${targetNodes.nodeGroup}: cp
+              
 onInstall: configure
-      
+
+onAfterClone:
+  - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
+  - install: ${response.jps}
+    envName: ${event.response.env.envName}
+    nodeGroup: bl
+    settings: 
+      modules: ${settings.modules}      
+      workers: ${settings.workers}      
+
 actions:
   configure: 
    script: |-
