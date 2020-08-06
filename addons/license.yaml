@@ -8,13 +8,13 @@ description:
 globals:
   appid: 9e6afcf310004ac84060f90ff41a5aba
   
-permanent: true
 targetNodes:
   nodeType:
     - litespeedphp
     - llsmp
+    
 nodeGroupAlias:
-  ${settings.nodeGroup}: cp
+  ${targetNodes.nodeGroup}: cp
 
 buttons:        
   - settings: main
@@ -24,6 +24,9 @@ buttons:
     loadingText: Updating...
     confirmText: Do you want to apply license updates?
     successText: The license has been successfully updated!
+
+#disable Uninstall button 
+permanent: true
 
 onBeforeInit: |
   var resp = jelastic.dev.scripting.Eval(jps.globals.appid, session, "ls.wizard.ui");            
@@ -40,7 +43,7 @@ onBeforeSetCloudletCount[cp]:
   updateLicense: ${event.params.flexibleCloudlets}
 onBeforeServiceScaleOut[cp]: updateLicense
 onAfterScaleIn:
-  if ('${event.params.nodeGroup}' == '${settings.nodeGroup}'):
+  if ('${event.params.nodeGroup}' == '${targetNodes.nodeGroup}'):
     - if (${nodes.cp.length:0}): updateLicense
     - if (!${nodes.cp.length:0}): deleteLicense  #delete last node in the layer
 onBeforeDelete: deleteLicense
@@ -53,7 +56,7 @@ onAfterClone:
   - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
   - install: ${response.jps}
     envName: ${event.response.env.envName}
-    nodeGroup: ${settings.nodeGroup}
+    nodeGroup: ${targetNodes.nodeGroup}
     settings: 
       modules: ${settings.modules}      
       workers: ${settings.workers}      
@@ -72,7 +75,7 @@ actions:
       var params = {
             envName:"${env.envName}", 
             appId:"${env.appid}", 
-            nodeGroup:"${settings.nodeGroup}", 
+            nodeGroup:"${targetNodes.nodeGroup}", 
             cloudlets:cloudlets,
             modules:modules,
             domains:domains,
