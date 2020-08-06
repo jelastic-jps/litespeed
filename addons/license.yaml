@@ -2,23 +2,23 @@ type: update
 name: LiteSpeed License Add-on
 baseUrl: https://raw.githubusercontent.com/jelastic-jps/litespeed/master
 description:
-  short: LiteSpeed License
+  short: Manage LiteSpeed Commercial License.
   
 globals:
   appid: 9e6afcf310004ac84060f90ff41a5aba
   
-targetNodes: none
+#targetNodes: none
 nodeGroupAlias:
   ${settings.nodeGroup}: cp
 
 buttons:        
   - settings: main
     action: configure
-    caption: Configure
+    caption: Configure LiteSpeed License 
     submitButtonText: Apply          
     loadingText: Updating...
     confirmText: Do you want to apply license updates?
-    successText: LiteSpeed license has been successfully updated!
+    successText: The license has been successfully updated!
 
 onBeforeInit: |
   var resp = jelastic.dev.scripting.Eval(jps.globals.appid, session, "ls.wizard.ui");            
@@ -56,8 +56,7 @@ actions:
     script: |-
       var cloudlets = getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets:0},
           params = {envName:"${env.envName}", appId:"${env.appid}", nodeGroup:"${settings.nodeGroup}", cloudlets:cloudlets},
-          appid = "9e6afcf310004ac84060f90ff41a5aba",
-          resp = jelastic.dev.scripting.Eval(appid, session, "ls.license", params);
+          resp = jelastic.dev.scripting.Eval("${globals.appid}", session, "ls.license", params);
       return resp.response ? resp.response:resp;
     cloudlets: ${this:}
     
