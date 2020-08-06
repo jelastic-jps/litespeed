@@ -61,7 +61,7 @@ actions:
       var modules = "${settings.modules:cache}",
           workers = ${settings.workers:1},
           domains = ${settings.domains:5},
-          cloudlets = cloudlets = getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets:0};
+          cloudlets = getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets:0};
       if ((cloudlets *  ${nodes.cp.length}) > 16 && workers == 1 && domains == 1 && modules == 'cache') {
         return {result:'warning', message:'FREE Starter lisense is applicable only for nodes with scaling limit up to 16 cloudlets / 2 GiB RAM'}
       }
