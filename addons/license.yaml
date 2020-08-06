@@ -1,8 +1,9 @@
 type: update
-name: LiteSpeed License Add-on
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/litespeed/master
+name: LiteSpeed License Manager
+baseUrl: https://raw.githubusercontent.com/sych74/litespeed/master
+logo: /images/ls-ws-license.svg?sanitize=true
 description:
-  short: Manage LiteSpeed Commercial License.
+  short: Press "Configure" button to choose and instantly apply the required license options.
   
 globals:
   appid: 9e6afcf310004ac84060f90ff41a5aba
@@ -14,7 +15,7 @@ nodeGroupAlias:
 buttons:        
   - settings: main
     action: configure
-    caption: Configure LiteSpeed License 
+    caption: Configure
     submitButtonText: Apply          
     loadingText: Updating...
     confirmText: Do you want to apply license updates?
