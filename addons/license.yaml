@@ -8,7 +8,11 @@ description:
 globals:
   appid: 9e6afcf310004ac84060f90ff41a5aba
   
-#targetNodes: none
+permanent: true
+targetNodes:
+  nodeType:
+    - litespeedphp
+    - llsmp
 nodeGroupAlias:
   ${settings.nodeGroup}: cp
 
