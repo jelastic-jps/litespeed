@@ -12,6 +12,7 @@ targetNodes:
   nodeType:
     - litespeedphp
     - llsmp
+    - litespeedadc
     
 nodeGroupAlias:
   ${targetNodes.nodeGroup}: cp
@@ -29,7 +30,8 @@ buttons:
 permanent: true
 
 onBeforeInit: |
-  var resp = jelastic.dev.scripting.Eval(jps.globals.appid, session, "ls.wizard.ui");            
+  var params = "${nodes.cp.master.nodeType}".indexOf("adc") > -1 ? {} : {stack:"adc"},
+      resp = jelastic.dev.scripting.Eval(jps.globals.appid, session, "ls.wizard.ui", params); 
   return resp.response ? resp.response:resp;
 
 onInstall:
@@ -65,10 +67,11 @@ onAfterClone:
 actions:    
   updateLicense: 
     script: |-
-      var modules = "${settings.modules:cache}",
+      var isAdc = "${nodes.cp.master.nodeType}".indexOf("adc") > -1,
+          modules = isAdc ? ("${settings.modules}" == "true" ? "litemageunlimited":"cache") : "${settings.modules:cache}",
           workers = ${settings.workers:1},
           domains = ${settings.domains:5},
-          cloudlets = getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets:0};
+          cloudlets = isAdc ? -1 : (getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets:0});
       if ((cloudlets *  ${nodes.cp.length}) > 16 && workers == 1 && domains == 1 && modules == 'cache') {
         return {result:'warning', message:'FREE Starter lisense is applicable only for nodes with scaling limit up to 16 cloudlets / 2 GiB RAM'}
       }
@@ -84,6 +87,6 @@ actions:
           resp = jelastic.dev.scripting.Eval("${globals.appid}", session, "ls.license", params);
       return resp.response ? resp.response:resp;      
     cloudlets: ${this:}
-    
+
   deleteLicense:
     updateLicense: delete
