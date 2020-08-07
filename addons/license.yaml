@@ -6,7 +6,7 @@ nodeGroupAlias:
   ${settings.nodeGroup}: cp 
 
 onInstall:    
-  install [${settings.nodeGroup}]:  
+  install[cp]:  
     type: update  
     name: LiteSpeed License Manager
     baseUrl: https://raw.githubusercontent.com/sych74/litespeed/master
