@@ -1,92 +1,100 @@
 type: update
-name: LiteSpeed License Manager
-baseUrl: https://raw.githubusercontent.com/sych74/litespeed/master
-logo: /images/ls-ws-license.svg?sanitize=true
-description:
-  short: Press "Configure" button to choose and instantly apply the required license options.
-  
-globals:
-  appid: 9e6afcf310004ac84060f90ff41a5aba
-  
-targetNodes:
-  nodeType:
-    - litespeedphp
-    - llsmp
-    - litespeedadc
-    
+targetNodes: none
+name: LiteSpeed License Installer
+
 nodeGroupAlias:
-  ${targetNodes.nodeGroup}: cp
+  ${settings.nodeGroup}: cp 
 
-buttons:        
-  - settings: main
-    action: updateLicense
-    caption: Configure
-    submitButtonText: Apply          
-    loadingText: Updating...
-    confirmText: Do you want to apply license updates?
-    successText: The license has been successfully updated!
+onInstall:    
+  install [${settings.nodeGroup}]:  
+    type: update  
+    name: LiteSpeed License Manager
+    baseUrl: https://raw.githubusercontent.com/sych74/litespeed/master
+    logo: /images/ls-ws-license.svg?sanitize=true
+    description:
+      short: Press "Configure" button to choose and instantly apply the required license options.
 
-#disable Uninstall button 
-permanent: true
+    globals:
+      appid: 9e6afcf310004ac84060f90ff41a5aba
 
-onBeforeInit: |
-  var params = "${nodes.cp.master.nodeType}".indexOf("adc") > -1 ? {} : {stack:"adc"},
-      resp = jelastic.dev.scripting.Eval(jps.globals.appid, session, "ls.wizard.ui", params); 
-  return resp.response ? resp.response:resp;
+    targetNodes:
+      nodeType:
+        - litespeedphp
+        - llsmp
+        - litespeedadc
 
-onInstall:
-  - if ("${nodes.cp.master.nodeType}".indexOf("litespeedphp") > -1):
-      cmd[cp]: sed -i "s/root@localhost/${user.email}/g" /var/www/conf/httpd_config.xml
-  - updateLicense
-   
-onAfterStart: updateLicense
+    nodeGroupAlias:
+      ${targetNodes.nodeGroup}: cp
 
-onBeforeSetCloudletCount[cp]:
-  updateLicense: ${event.params.flexibleCloudlets}
-onBeforeServiceScaleOut[cp]: updateLicense
-onAfterScaleIn:
-  if ('${event.params.nodeGroup}' == '${targetNodes.nodeGroup}'):
-    - if (${nodes.cp.length:0}): updateLicense
-    - if (!${nodes.cp.length:0}): deleteLicense  #delete last node in the layer
-onBeforeDelete: deleteLicense
-onAfterStop: 
-  - if (event.response.result == 0): deleteLicense
-  - else:
-      log: "ERROR -> result: ${event.response.result}, error: ${event.response.error}"    
+    buttons:        
+      - settings: main
+        action: updateLicense
+        caption: Configure
+        submitButtonText: Apply          
+        loadingText: Updating...
+        confirmText: Do you want to apply license updates?
+        successText: The license has been successfully updated!
 
-onAfterClone:
-  - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
-  - install: ${response.jps}
-    envName: ${event.response.env.envName}
-    nodeGroup: ${targetNodes.nodeGroup}
-    settings: 
-      modules: ${settings.modules}      
-      workers: ${settings.workers}      
-      domains: ${settings.domains}
-      
-actions:    
-  updateLicense: 
-    script: |-
-      var isAdc = "${nodes.cp.master.nodeType}".indexOf("adc") > -1,
-          modules = isAdc ? ("${settings.modules}" == "true" ? "litemageunlimited":"cache") : "${settings.modules:cache}",
-          workers = ${settings.workers:1},
-          domains = ${settings.domains:5},
-          cloudlets = isAdc ? -1 : (getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets:0});
-      if ((cloudlets *  ${nodes.cp.length}) > 16 && workers == 1 && domains == 1 && modules == 'cache') {
-        return {result:'warning', message:'FREE Starter lisense is applicable only for nodes with scaling limit up to 16 cloudlets / 2 GiB RAM'}
-      }
-      var params = {
-            envName:"${env.envName}", 
-            appId:"${env.appid}", 
-            nodeGroup:"${targetNodes.nodeGroup}", 
-            cloudlets:cloudlets,
-            modules:modules,
-            domains:domains,
-            workers:workers
-          },
-          resp = jelastic.dev.scripting.Eval("${globals.appid}", session, "ls.license", params);
-      return resp.response ? resp.response:resp;      
-    cloudlets: ${this:}
+    #disable Uninstall button 
+    permanent: true
 
-  deleteLicense:
-    updateLicense: delete
+    onBeforeInit: |
+      var resp = jelastic.dev.scripting.Eval(jps.globals.appid, session, "ls.wizard.ui", {stack:"${nodes.cp.master.nodeType}".indexOf("adc") > -1 ? "adc": "ws"}); 
+      return resp.response ? resp.response:resp;
+
+    onInstall:
+      - if ("${nodes.cp.master.nodeType}".indexOf("litespeedphp") > -1):
+          cmd[cp]: sed -i "s/root@localhost/${user.email}/g" /var/www/conf/httpd_config.xml
+      - updateLicense
+
+    onAfterStart: updateLicense
+
+    onBeforeSetCloudletCount[cp]:
+      updateLicense: ${event.params.flexibleCloudlets}
+    onBeforeServiceScaleOut[cp]: updateLicense
+    onAfterScaleIn:
+      if ('${event.params.nodeGroup}' == '${targetNodes.nodeGroup}'):
+        - if (${nodes.cp.length:0}): updateLicense
+        - if (!${nodes.cp.length:0}): deleteLicense  #delete last node in the layer
+    onBeforeDelete: deleteLicense
+    onAfterStop: 
+      - if (event.response.result == 0): deleteLicense
+      - else:
+          log: "ERROR -> result: ${event.response.result}, error: ${event.response.error}"    
+
+    onAfterClone:
+      - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
+      - install: ${response.jps}
+        envName: ${event.response.env.envName}
+        nodeGroup: ${targetNodes.nodeGroup}
+        settings: 
+          modules: ${settings.modules}      
+          workers: ${settings.workers}      
+          domains: ${settings.domains}
+
+    actions:    
+      updateLicense: 
+        script: |-
+          var isAdc = "${nodes.cp.master.nodeType}".indexOf("adc") > -1,
+              modules = isAdc ? ("${settings.modules}" == "true" ? "litemageunlimited":"cache") : "${settings.modules:cache}",
+              workers = ${settings.workers:1},
+              domains = ${settings.domains:5},
+              cloudlets = isAdc ? -1 : (getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets:0});
+          if ((cloudlets *  ${nodes.cp.length}) > 16 && workers == 1 && domains == 1 && modules == 'cache') {
+            return {result:'warning', message:'FREE Starter lisense is applicable only for nodes with scaling limit up to 16 cloudlets / 2 GiB RAM'}
+          }
+          var params = {
+                envName:"${env.envName}", 
+                appId:"${env.appid}", 
+                nodeGroup:"${targetNodes.nodeGroup}", 
+                cloudlets:cloudlets,
+                modules:modules,
+                domains:domains,
+                workers:workers
+              },
+              resp = jelastic.dev.scripting.Eval("${globals.appid}", session, "ls.license", params);
+          return resp.response ? resp.response:resp;      
+        cloudlets: ${this:}
+
+      deleteLicense:
+        updateLicense: delete
