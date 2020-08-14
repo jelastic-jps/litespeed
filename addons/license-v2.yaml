@@ -70,9 +70,9 @@ actions:
           modules = isAdc ? ("${settings.modules}" == "true" ? "litemageunlimited":"cache") : "${settings.modules:cache}",
           workers = ${settings.workers:1},
           domains = ${settings.domains:0},
-          cloudlets = isAdc ? -1 : (getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets:0});
+          cloudlets = getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets:0};
       if (!domains) domains = (workers == 1 && cloudlets <= 16) ? 1 : 5;
-      if ((cloudlets *  ${nodes.cp.length}) > 16 && workers == 1 && domains == 1 && modules == 'cache') {
+      if (!isAdc && (cloudlets *  ${nodes.cp.length}) > 16 && workers == 1 && domains == 1 && modules == 'cache') {
         return {result:'warning', message:'FREE Starter lisense is applicable only for nodes with scaling limit up to 16 cloudlets / 2 GiB RAM'}
       }
       var params = {
