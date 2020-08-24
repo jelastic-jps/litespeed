@@ -88,16 +88,16 @@ actions:
         return {result:'warning', message:'FREE Starter lisense is applicable only for nodes with scaling limit up to 16 cloudlets / 2 GiB RAM'}
       }
       var params = {
-            envName:"${env.envName}", 
-            appId:"${env.appid}", 
-            nodeGroup:"${targetNodes.nodeGroup}", 
+            envName:"${env.envName}",
+            appId:"${env.appid}",
+            nodeGroup:"${targetNodes.nodeGroup}",
             cloudlets:cloudlets,
             modules:modules,
             domains:domains,
             workers:workers
           },
           resp = jelastic.dev.scripting.Eval("${globals.appid}", session, "ls.license", params);
-      return resp.response ? resp.response:resp;      
+      return resp.response ? resp.response:resp;
     cloudlets: ${this:}
 
   deleteLicense:
