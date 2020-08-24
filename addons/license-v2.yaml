@@ -34,8 +34,16 @@ onBeforeInstall: |
   return resp.response ? resp.response:resp;
 
 onInstall:
-  - if ("${nodes.cp.master.nodeType}".indexOf("litespeedphp") > -1):
-      cmd[cp]: sed -i "s/root@localhost/${user.email}/g" /var/www/conf/httpd_config.xml
+  - if ("${nodes.cp.master.nodeType}".indexOf("litespeedphp") > -1 || "${nodes.cp.master.nodeType}".indexOf("llsmp") > -1):
+      updateAdminEmails:
+        nodeGroup: "cp"
+        serverConfig: "/var/www/conf/httpd_config.xml"
+        configSection: "httpServerConfig"
+  - if ("${nodes.bl.master.nodeType}".indexOf("litespeedadc") > -1):
+      updateAdminEmails:
+        nodeGroup: "bl"
+        serverConfig: "/var/www/conf/lslbd_config.xml"
+        configSection: "loadBalancerConfig"
   - updateLicense
 
 onAfterStart: updateLicense
@@ -63,7 +71,12 @@ onAfterClone:
       workers: ${settings.workers}      
       domains: ${settings.domains}
 
-actions:    
+actions:
+  updateAdminEmails:
+    cmd[${this.nodeGroup}]: |-
+      xmlstarlet ed --inplace -d "${this.configSection}/adminEmails" ${this.serverConfig}; 
+      xmlstarlet ed --inplace -s "${this.configSection}" -t elem -n "adminEmails" -v ${user.email} ${this.serverConfig};
+      
   updateLicense: 
     script: |-
       var isAdc = "${nodes.cp.master.nodeType}".indexOf("adc") > -1,
