@@ -67,9 +67,9 @@ onAfterClone:
     envName: ${event.response.env.envName}
     nodeGroup: ${targetNodes.nodeGroup}
     settings: 
-      modules: ${settings.modules}      
-      workers: ${settings.workers}      
-      domains: ${settings.domains}
+      modules: ${settings.modules:cache}      
+      workers: ${settings.workers:1}      
+      domains: ${settings.domains:0}
 
 actions:
   updateAdminEmails:
