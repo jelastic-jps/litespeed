@@ -62,14 +62,11 @@ onAfterStop:
       log: "ERROR -> result: ${event.response.result}, error: ${event.response.error}"    
 
 onAfterClone:
-  - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
+  - script: return {result:0, jps:MANIFEST};
   - install: ${response.jps}
     envName: ${event.response.env.envName}
     nodeGroup: ${targetNodes.nodeGroup}
-    settings: 
-      modules: ${settings.modules:cache}      
-      workers: ${settings.workers:1}      
-      domains: ${settings.domains:0}
+    settings: ${settings}
 
 actions:
   updateAdminEmails:
