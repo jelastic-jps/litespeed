@@ -39,7 +39,7 @@ onInstall:
         nodeGroup: "cp"
         serverConfig: "/var/www/conf/httpd_config.xml"
         configSection: "httpServerConfig"
-  - if ("${nodes.bl.master.nodeType}".indexOf("litespeedadc") > -1):
+  - if ("${nodes.cp.master.nodeType}".indexOf("litespeedadc") > -1):
       updateAdminEmails:
         nodeGroup: "cp"
         serverConfig: "/var/www/conf/lslbd_config.xml"
