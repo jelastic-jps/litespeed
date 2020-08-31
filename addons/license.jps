@@ -15,7 +15,7 @@ onInstall:
         configSection: "httpServerConfig"
   - if ("${nodes.bl.master.nodeType}".indexOf("litespeedadc") > -1):
       updateAdminEmails:
-        nodeGroup: "bl"
+        nodeGroup: "cp"
         serverConfig: "/var/www/conf/lslbd_config.xml"
         configSection: "loadBalancerConfig"
   - updateLicense
