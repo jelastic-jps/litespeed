@@ -1,57 +1,22 @@
-type: update
-name: LiteSpeed License Add-on
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/litespeed/master
-description:
-  short: LiteSpeed License
+type: install
+name: LiteSpeed License Manager
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/litespeed/master/addons
 targetNodes: none
-nodeGroupAlias:
-  ${settings.nodeGroup}: cp
 
 onInstall:
-  - if ("${nodes.cp.master.nodeType}".indexOf("litespeedphp") > -1 || "${nodes.cp.master.nodeType}".indexOf("llsmp") > -1):
-      updateAdminEmails:
-        nodeGroup: "cp"
-        serverConfig: "/var/www/conf/httpd_config.xml"
-        configSection: "httpServerConfig"
-  - if ("${nodes.cp.master.nodeType}".indexOf("litespeedadc") > -1):
-      updateAdminEmails:
-        nodeGroup: "cp"
-        serverConfig: "/var/www/conf/lslbd_config.xml"
-        configSection: "loadBalancerConfig"
-  - updateLicense
-
-onAfterStart: updateLicense
-onBeforeSetCloudletCount[cp]:
-  updateLicense: ${event.params.flexibleCloudlets}
-onBeforeServiceScaleOut[cp]: updateLicense
-onAfterScaleIn:
-  if ('${event.params.nodeGroup}' == '${settings.nodeGroup}'):
-    - if (${nodes.cp.length:0}): updateLicense
-    - if (!${nodes.cp.length:0}): deleteLicense  #delete last node in a layer
-onBeforeDelete: deleteLicense
-onAfterStop: 
-  - if (event.response.result == 0): deleteLicense
-  - else:
-      log: "ERROR -> result: ${event.response.result}, error: ${event.response.error}"    
-onAfterClone:
-  install: ${baseUrl}/addons/license.jps?_r=${fn.random}
-  envName: ${event.response.env.envName}
-  settings: 
-    nodeGroup: ${settings.nodeGroup}
-
-actions:
-  updateAdminEmails:
-    cmd[${this.nodeGroup}]: |-
-      xmlstarlet ed --inplace -d "${this.configSection}/adminEmails" ${this.serverConfig}; 
-      xmlstarlet ed --inplace -s "${this.configSection}" -t elem -n "adminEmails" -v ${user.email} ${this.serverConfig};
-  updateLicense:
-    script: |-
-      var cloudlets = getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets:0},
-          params = {envName:"${env.envName}", appId:"${env.appid}", nodeGroup:"${settings.nodeGroup}", cloudlets:cloudlets},
-          appid = "9e6afcf310004ac84060f90ff41a5aba",
-          resp = jelastic.dev.scripting.Eval(appid, session, "ls.license", params);
-      return resp.response ? resp.response:resp;
-    cloudlets: ${this:}
-
-  deleteLicense:
-    updateLicense: delete
+  - system.service.GetVersion
+  - set: { version: "${response.version}.${response.build}" }
+  - if ('${fn.compare([this.version], 5.9.2)}' > -1):
+      install: 
+        jps: license-v2.yml
+        tracked: false
+        nodeGroup: ${settings.nodeGroup}
+        settings: 
+          nodeGroup: ${settings.nodeGroup}
+  - else: 
+      install:
+        jps: license-v1.yml
+        tracked: false
+        nodeGroup: ${settings.nodeGroup}
+        settings:
+          nodeGroup: ${settings.nodeGroup}
