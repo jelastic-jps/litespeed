@@ -5,7 +5,7 @@ targetNodes: none
 
 onInstall:
   - script: |
-      var resp = api.dev.scripting.Eval("9e6afcf310004ac84060f90ff41a5aba", session, "ls.getversion");
+      var resp = api.dev.scripting.Eval("9e6afcf310004ac84060f90ff41a5aba", session, "ls.getVersion");
       if (resp.result != 0 && resp.result != com.hivext.api.Response.SCRIPT_NOT_FOUND) return resp;
       return { result: 0, version: resp.version || 0 };
   - if ('${fn.compare([response.version], 2.0)}' > -1):
