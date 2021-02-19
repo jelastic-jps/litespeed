@@ -71,6 +71,10 @@ onAfterClone:
 onAfterAttachExtIp[cp]:
   if ("${nodes.cp.master.nodeType}".indexOf("litespeedadc") > -1):
     cmd[cp]: jcm enableIpInProxyHeader - sets "Use Client IP in Header" to "Trusted IP only";
+    
+onAfterSetExtIpCount[cp]:
+  if ("${nodes.cp.master.nodeType}".indexOf("litespeedadc") > -1):
+    cmd[cp]: jcm enableIpInProxyHeader - sets "Use Client IP in Header" to "Trusted IP only";
 
 onAfterDetachExtIp[cp]:
   if ("${nodes.cp.master.nodeType}".indexOf("litespeedadc") > -1):
