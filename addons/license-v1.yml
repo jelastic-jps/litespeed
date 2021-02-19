@@ -39,6 +39,14 @@ onAfterClone:
   settings: 
     nodeGroup: ${settings.nodeGroup}
 
+onAfterAttachExtIp:
+  if ("${nodes.cp.master.nodeType}".indexOf("litespeedadc") > -1):
+    cmd[cp]: jcm enableIpInProxyHeader - sets "Use Client IP in Header" to "Trusted IP only";
+    
+onAfterDetachExtIp:
+  if ("${nodes.cp.master.nodeType}".indexOf("litespeedadc") > -1):
+    cmd[cp]: jcm disableIpInProxyHeader - sets "Use Client IP in Header" to "disabled"
+
 actions:
   updateAdminEmails:
     cmd[${this.nodeGroup}]: |-
