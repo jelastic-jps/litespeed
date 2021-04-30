@@ -70,7 +70,7 @@ onAfterClone:
 
 onAfterAttachExtIp[cp]:
   if ("${nodes.cp.nodeType}".indexOf("litespeedadc") > -1):
-    cmd[cp]: jcm enableIpInProxyHeader - sets "Use Client IP in Header" to "Trusted IP only";
+    cmd[cp]: jcm disableIpInProxyHeader - sets "Use Client IP in Header" to "disabled"
 
 onAfterSetExtIpCount[cp]:
   if ("${nodes.cp.nodeType}".indexOf("litespeedadc") > -1):
@@ -78,7 +78,7 @@ onAfterSetExtIpCount[cp]:
 
 onAfterDetachExtIp[cp]:
   if ("${nodes.cp.nodeType}".indexOf("litespeedadc") > -1):
-    cmd[cp]: jcm disableIpInProxyHeader - sets "Use Client IP in Header" to "disabled"
+    cmd[cp]: jcm enableIpInProxyHeader - sets "Use Client IP in Header" to "Trusted IP only";
 
 actions:
   updateAdminEmails:
