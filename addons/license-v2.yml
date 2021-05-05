@@ -74,7 +74,7 @@ onAfterAttachExtIp[cp]:
 
 onAfterSetExtIpCount[cp]:
   if ("${nodes.cp.nodeType}".indexOf("litespeedadc") > -1):
-    cmd[cp]: jcm enableIpInProxyHeader - sets "Use Client IP in Header" to "Trusted IP only";
+    cmd[cp]: jcm disableIpInProxyHeader - sets "Use Client IP in Header" to "disabled"
 
 onAfterDetachExtIp[cp]:
   if ("${nodes.cp.nodeType}".indexOf("litespeedadc") > -1):
