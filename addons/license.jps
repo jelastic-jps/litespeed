@@ -1,6 +1,6 @@
 type: install
 name: LiteSpeed License Manager
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/litespeed/master/addons
+baseUrl: https://raw.githubusercontent.com/sych74/litespeed/JE-57383/addons
 targetNodes: none
 
 onInstall:
