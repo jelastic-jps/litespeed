@@ -18,6 +18,7 @@ onInstall:
         nodeGroup: "cp"
         serverConfig: "/var/www/conf/lslbd_config.xml"
         configSection: "loadBalancerConfig"
+      updateUseClientIPinHeader:
   - updateLicense
 
 onAfterStart: updateLicense
@@ -40,16 +41,13 @@ onAfterClone:
     nodeGroup: ${settings.nodeGroup}
 
 onAfterAttachExtIp[cp]:
-  if ("${nodes.cp.nodeType}".indexOf("litespeedadc") > -1):
-    cmd[cp]: jcm disableIpInProxyHeader - sets "Use Client IP in Header" to "disabled"
+  if ("${nodes.cp.nodeType}".indexOf("litespeedadc") > -1): updateUseClientIPinHeader
 
 onAfterSetExtIpCount[cp]:
-  if ("${nodes.cp.nodeType}".indexOf("litespeedadc") > -1):
-    cmd[cp]: jcm disableIpInProxyHeader - sets "Use Client IP in Header" to "disabled"
+  if ("${nodes.cp.nodeType}".indexOf("litespeedadc") > -1): updateUseClientIPinHeader
 
 onAfterDetachExtIp[cp]:
-  if ("${nodes.cp.nodeType}".indexOf("litespeedadc") > -1):
-    cmd[cp]: jcm enableIpInProxyHeader - sets "Use Client IP in Header" to "Trusted IP only";
+  if ("${nodes.cp.nodeType}".indexOf("litespeedadc") > -1): updateUseClientIPinHeader
 
 actions:
   updateAdminEmails:
@@ -67,3 +65,10 @@ actions:
 
   deleteLicense:
     updateLicense: delete
+    
+  updateUseClientIPinHeader:
+    forEach(nodes.cp):
+      - if ("${@i.extIPs}".indexOf("extIPs") > -1): 
+          cmd[${@i.id}]: jcm enableIpInProxyHeader - sets "Use Client IP in Header" to "Trusted IP only";
+      - else:
+          cmd[${@i.id}]: jcm disableIpInProxyHeader - sets "Use Client IP in Header" to "disabled"
