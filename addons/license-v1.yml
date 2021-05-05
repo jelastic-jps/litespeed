@@ -68,7 +68,7 @@ actions:
     
   updateUseClientIPinHeader:
     forEach(nodes.cp):
-      - if ("${@i.extIPs}".indexOf("extIPs") > -1): 
-          cmd[${@i.id}]: jcm enableIpInProxyHeader - sets "Use Client IP in Header" to "Trusted IP only";
-      - else:
+      - if ("${@i.extIPs[0]:}"): 
           cmd[${@i.id}]: jcm disableIpInProxyHeader - sets "Use Client IP in Header" to "disabled"
+      - else:
+          cmd[${@i.id}]: jcm enableIpInProxyHeader - sets "Use Client IP in Header" to "Trusted IP only";      
