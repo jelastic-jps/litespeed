@@ -81,8 +81,14 @@ onAfterDetachExtIp[cp]:
 actions:
   updateAdminEmails:
     cmd[${this.nodeGroup}]: |-
-      xmlstarlet ed --inplace -d "${this.configSection}/adminEmails" ${this.serverConfig}; 
-      xmlstarlet ed --inplace -s "${this.configSection}" -t elem -n "adminEmails" -v ${user.email} ${this.serverConfig};
+      CURRENT_VALUE=$(xmlstarlet sel -t -v "${this.configSection}/adminEmails" ${this.serverConfig})
+      if [ "x${CURRENT_VALUE}" != "x${user.email}" ]; then
+          if [[ -z "${CURRENT_VALUE}" ]]; then
+              xmlstarlet ed --inplace -s "${this.configSection}" -t elem -n "adminEmails" -v "${user.email}" ${this.serverConfig};
+          else
+              xmlstarlet ed --inplace -u "${this.configSection}/adminEmails" -v "${user.email}" ${this.serverConfig};
+          fi
+      fi
       
   updateLicense: 
     script: |-
