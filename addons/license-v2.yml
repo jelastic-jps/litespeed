@@ -99,10 +99,10 @@ actions:
           litemage = ${settings.lm:"false"},
           cloudlets = getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets:0};
       if (!domains) domains = (workers == 1 && cloudlets <= 16) ? 1 : 5;
-      var resp = jelastic.env.control.AddContainerEnvVars({
+      var resp = api.env.control.AddContainerEnvVars({
           envName: "${env.name}",
           session: session,
-          nodeGroup: "cp",
+          nodeGroup: "${nodes.cp.nodeGroup}",
           vars: {
             "LITEMAGE": (litemage === true) ? "ON" : "OFF"
           }
@@ -117,7 +117,7 @@ actions:
             domains:domains,
             workers:workers
           };
-      resp = jelastic.dev.scripting.Eval("${globals.appid}", session, "ls.license", params);
+      resp = api.dev.scripting.Eval("${globals.appid}", session, "ls.license", params);
       return resp.response ? resp.response:resp;
     cloudlets: ${this:}
 
