@@ -96,18 +96,8 @@ actions:
           modules = isAdc ? ("${settings.modules}" == "true" ? "litemageunlimited":"cache") : "${settings.modules:cache}",
           workers = ${settings.workers:1},
           domains = ${settings.domains:0},
-          litemage = ${settings.lm:false},
           cloudlets = getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets:0};
       if (!domains) domains = (workers == 1 && cloudlets <= 16) ? 1 : 5;
-      var resp = api.env.control.AddContainerEnvVars({
-          envName: "${env.name}",
-          session: session,
-          nodeGroup: "${nodes.cp.nodeGroup}",
-          vars: {
-            "LITEMAGE": (litemage === true) ? "ON" : "OFF"
-          }
-      })
-      if (resp.result != 0) { return resp; }
       var params = {
             envName:"${env.envName}",
             appId:"${env.appid}",
@@ -116,8 +106,8 @@ actions:
             modules:modules,
             domains:domains,
             workers:workers
-          };
-      resp = api.dev.scripting.Eval("${globals.appid}", session, "ls.license", params);
+          },
+          resp = jelastic.dev.scripting.Eval("${globals.appid}", session, "ls.license", params);
       return resp.response ? resp.response:resp;
     cloudlets: ${this:}
 
