@@ -1,10 +1,3 @@
-type: update  
-name: LiteSpeed License Manager
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/litespeed/master
-logo: /images/ls-ws-license.svg?sanitize=true
-description:
-  short: Press "Configure" button to choose and instantly apply the required license options.
-
 globals:
   appid: 9e6afcf310004ac84060f90ff41a5aba
 
@@ -35,20 +28,16 @@ onBeforeInstall: |
 
 onInstall:
   - if ("${nodes.cp.master.nodeType}".indexOf("litespeedphp") > -1 || "${nodes.cp.master.nodeType}".indexOf("llsmp") > -1):
-      - updateAdminEmails:
-          nodeGroup: "cp"
-          serverConfig: "/var/www/conf/httpd_config.xml"
-          configSection: "httpServerConfig"
-      - setGlobals:
-          lsNodeGroup: "cp"
+      updateAdminEmails:
+        nodeGroup: "cp"
+        serverConfig: "/var/www/conf/httpd_config.xml"
+        configSection: "httpServerConfig"
   - if ("${nodes.cp.master.nodeType}".indexOf("litespeedadc") > -1):
-      - updateAdminEmails:
-          nodeGroup: "bl"
-          serverConfig: "/var/www/conf/lslbd_config.xml"
-          configSection: "loadBalancerConfig"
-      - updateUseClientIPinHeader
-      - setGlobals:
-          lsNodeGroup: "bl"
+      updateAdminEmails:
+        nodeGroup: "cp"
+        serverConfig: "/var/www/conf/lslbd_config.xml"
+        configSection: "loadBalancerConfig"
+      updateUseClientIPinHeader:
   - updateLicense
 
 onAfterStart: updateLicense
@@ -100,20 +89,15 @@ actions:
           modules = isAdc ? ("${settings.modules}" == "true" ? "litemageunlimited":"cache") : "${settings.modules:cache}",
           workers = ${settings.workers:1},
           domains = ${settings.domains:0},
-          litemage = ${settings.lm:"false"},
+          litemage = ${settings.lm:false},
           cloudlets = getParam("cloudlets") || ${nodes.cp.master.flexibleCloudlets:0};
       if (!domains) domains = (workers == 1 && cloudlets <= 16) ? 1 : 5;
-      if (litemage == "false") {
-          litemage = "OFF"
-      } else {
-          litemage = "ON"
-      };
-      var resp = jelastic.env.control.AddContainerEnvVars({
+      var resp = api.env.control.AddContainerEnvVars({
           envName: "${env.name}",
           session: session,
-          nodeGroup: "${globals.lsNodeGroup}",
+          nodeGroup: "${nodes.cp.nodeGroup}",
           vars: {
-            "LITEMAGE": litemage
+            "LITEMAGE": (litemage === true) ? "ON" : "OFF"
           }
       })
       if (resp.result != 0) { return resp; }
@@ -125,8 +109,8 @@ actions:
             modules:modules,
             domains:domains,
             workers:workers
-          },
-          resp = jelastic.dev.scripting.Eval("${globals.appid}", session, "ls.license", params);
+          };
+      resp = api.dev.scripting.Eval("${globals.appid}", session, "ls.license", params);
       return resp.response ? resp.response:resp;
     cloudlets: ${this:}
 
