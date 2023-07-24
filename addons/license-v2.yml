@@ -1,3 +1,10 @@
+type: update  
+name: LiteSpeed License Manager
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/litespeed/master
+logo: /images/ls-ws-license.svg?sanitize=true
+description:
+  short: Press "Configure" button to choose and instantly apply the required license options.
+
 globals:
   appid: 9e6afcf310004ac84060f90ff41a5aba
 
