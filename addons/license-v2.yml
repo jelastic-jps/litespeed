@@ -57,10 +57,7 @@ onAfterScaleIn:
     - if (${nodes.cp.length:0}): updateLicense
     - if (!${nodes.cp.length:0}): deleteLicense  #delete last node in the layer
 onBeforeDelete: deleteLicense
-onAfterStop: 
-  - if (event.response.result == 0): deleteLicense
-  - else:
-      log: "ERROR -> result: ${event.response.result}, error: ${event.response.error}"    
+onBeforeStop: deleteLicense  
 
 onAfterClone:
   - script: return {result:0, jps:MANIFEST};
@@ -122,11 +119,24 @@ actions:
     cloudlets: ${this:}
 
   deleteLicense:
-    updateLicense: delete
+    - getCurrentEnvStatus
+    - if ('${globals.currentEnvStatus}' != '2'):
+      - updateLicense: delete
+    - else:
+      - log: "License cannot be deleted when environment status is [ENV_STATUS_TYPE_DOWN]. Required statuses [ENV_STATUS_TYPE_RUNNING, ENV_STATUS_TYPE_CREATING, ENV_STATUS_TYPE_CLONING]"
   
   updateUseClientIPinHeader:
     forEach(nodes.cp):
       - if ("${@i.extIPs[0]:}"): 
           cmd[${@i.id}]: jcm disableIpInProxyHeader - sets "Use Client IP in Header" to "disabled"
       - else:
-          cmd[${@i.id}]: jcm enableIpInProxyHeader - sets "Use Client IP in Header" to "Trusted IP only";      
+          cmd[${@i.id}]: jcm enableIpInProxyHeader - sets "Use Client IP in Header" to "Trusted IP only";
+          
+  getCurrentEnvStatus:
+    script: |-
+      var status, resp, onAfterReturn = { setGlobals: {} }, glbs = onAfterReturn.setGlobals;
+      resp = jelastic.env.control.GetEnvInfo("${env.envName}", session);
+      if (resp.result != 0) return resp;
+      status = resp.env.status;
+      glbs["currentEnvStatus"] = status;
+      return { result: 0, onAfterReturn: onAfterReturn };
