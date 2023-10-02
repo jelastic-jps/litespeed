@@ -40,11 +40,11 @@ onInstall:
         serverConfig: "/var/www/conf/httpd_config.xml"
         configSection: "httpServerConfig"
   - if ("${nodes.cp.master.nodeType}".indexOf("litespeedadc") > -1):
-      updateAdminEmails:
-        nodeGroup: "cp"
-        serverConfig: "/var/www/conf/lslbd_config.xml"
-        configSection: "loadBalancerConfig"
-      updateUseClientIPinHeader:
+      - updateAdminEmails:
+          nodeGroup: "cp"
+          serverConfig: "/var/www/conf/lslbd_config.xml"
+          configSection: "loadBalancerConfig"
+      - updateUseClientIPinHeader
   - updateLicense
 
 onAfterStart: updateLicense
