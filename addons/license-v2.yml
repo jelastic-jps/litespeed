@@ -1,6 +1,6 @@
 type: update  
 name: LiteSpeed License Manager
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/litespeed/master
+baseUrl: https://raw.githubusercontent.com/sych74/litespeed/JE-73023
 logo: /images/ls-ws-license.svg?sanitize=true
 description:
   short: Press "Configure" button to choose and instantly apply the required license options.
@@ -46,6 +46,9 @@ onInstall:
           configSection: "loadBalancerConfig"
       - updateUseClientIPinHeader
   - updateLicense
+  - setupLicenseMonitor
+
+onCustomNodeEvent [name:license-issue]: sendLicenseIssueEmail
 
 onAfterStart: updateLicense
 
@@ -76,6 +79,20 @@ onAfterDetachExtIp[cp]:
   if ("${nodes.cp.nodeType}".indexOf("litespeedadc") > -1): updateUseClientIPinHeader
 
 actions:
+  sendLicenseIssueEmail:
+    script: |-
+      var title = "LiteSpeed License Issue for ${env.envName}",
+          text = "There is an issue with the LiteSpeed license for ${env.envName}. Please check /var/www/logs/monitor.log for details.";
+      return api.message.email.Send(appid, signature, null, '${user.email}', '${user.email}', title, text);
+
+  setupLicenseMonitor:
+    cmd[${targetNodes.nodeGroup}]: |-
+      curl -o /usr/local/bin/lsmonitor.sh ${baseUrl}/scripts/lsmonitor.sh;
+      if ! crontab -l | grep -q '/usr/local/bin/lsmonitor.sh'; then
+        (crontab -l; echo "*/30 * * * * curl -o /usr/local/bin/lsmonitor.sh ${baseUrl}/scripts/lsmonitor.sh && bash /usr/local/bin/lsmonitor.sh") | crontab -;
+      fi
+    user: root
+
   updateAdminEmails:
     cmd[${this.nodeGroup}]: |-
       CURRENT_VALUE=$(xmlstarlet sel -t -v "${this.configSection}/adminEmails" ${this.serverConfig})
