@@ -48,6 +48,9 @@ onInstall:
   - updateLicense
 
 onAfterStart: updateLicense
+onAfterMigrate:
+  - deleteLicense
+  - updateLicense
 
 onBeforeSetCloudletCount[cp]:
   updateLicense: ${event.params.flexibleCloudlets}
